@@ -1,6 +1,5 @@
-from mongoengine import EmbeddedDocument, StringField, IntField, ListField, DictField, DateTimeField, BooleanField
+from mongoengine import EmbeddedDocument, StringField, IntField, ListField, DictField, DateTimeField, BooleanField, Document
 import datetime
-connect("")
 
 
 class Card(EmbeddedDocument):
@@ -14,9 +13,25 @@ class Card(EmbeddedDocument):
     damage = DictField(required=True)  # Damage for Each Type
 
     cooldown = IntField(required=True)  # In seconds
+    xpValue = StringField(required=True)
 
-    xpValue = IntField(required=True)
+
     imageUrl = StringField()
     timeCreated = DateTimeField(default=datetime.datetime.now)
     locked = BooleanField(default=False)
+
+    @staticmethod
+    def checkIfExists(guild: Document, code: str) -> bool:
+        for i in guild.cardCollection:
+            if i.code == code:
+                return True
+        return False
+
+    @staticmethod
+    def checkIfExistAndReturn(guild, code: str) -> EmbeddedDocument:
+        code = str(code)
+        for i in guild.cardCollection:
+            if i.code == code:
+                return i
+        return False
 
